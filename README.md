@@ -1,76 +1,83 @@
-<p align="center">
-    <a href="https://laravel.com" target="_blank">
-        <img src="https://speedforce.agency/wp-content/themes/wordpress_dev/build/images/logo.png" width="400" alt="Laravel Logo">
-    </a>
-</p>
+Route Details
 
-<p align="center">
-    <a href="https://travis-ci.org/laravel/framework"><img src="https://travis-ci.org/laravel/framework.svg" alt="Build Status"></a>
-    <a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/dt/laravel/framework" alt="Total Downloads"></a>
-    <a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/v/laravel/framework" alt="Latest Stable Version"></a>
-    <a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/l/laravel/framework" alt="License"></a>
-</p>
+Rate Limiting
 
-# Laravel Developer Assessment Task
+Middleware: throttle:5,1
+Description: Apply rate limit of 5 requests per minute to all routes within this group.
+Authentication Routes
 
-## Overview
+Register
 
-> Welcome to the Laravel Developer Assessment Task provided by SpeedForce Digital. This task is designed to evaluate your proficiency with Laravel and related packages. You will build a small Laravel application incorporating user authentication, role management, rate limiting, and a spin wheel feature.
+Method: POST
+Endpoint: /register
+Description: Handles user registration. It does not require any authentication but is subject to the defined rate limit.
+Body:
+example:
+{
+    "name": "test",
+    "email": "test2@example.com",
+    "password": "test12345",
+    "password_confirmation":"test12345"
+}
 
-## Requirements
+Login
 
-### 1. Project Setup
+Method: POST
+Endpoint: /login
+Description: Handles user login and returns an authentication token. Like the registration route, it does not require prior authentication but is rate-limited.
+Body:
+example:
+{
+    "name": "test",
+    "email": "test2@example.com",
+    "password": "test12345",
+    "password_confirmation":"test12345"
+}
 
-- **Task:** Create a new Laravel 11 project.
-- **Details:** Configure the environment and set up the database connection.
 
-### 2. Authentication with Laravel Sanctum
 
-- **Task:** Implement API authentication using Laravel Sanctum.
-- **Details:** Ensure users can register, log in, and log out via API endpoints. Secure API routes to require authentication.
+Logout
 
-### 3. Rate Limiting by IP
+Method: POST
+Endpoint: /logout
+Middleware: auth:sanctum
+Description: Logs out the authenticated user. This route requires the user to be authenticated via Sanctum.
+Retailer Role Routes
 
-- **Task:** Implement rate limiting to restrict users to a maximum of 5 API requests per minute from the same IP address.
-- **Details:** Use Laravel’s rate limiting features to enforce this rule.
+Middleware: auth:sanctum, role:Retailer
 
-### 4. Role Management with Laravel Spatie
+Description: These routes are protected by both the auth:sanctum middleware, ensuring that only authenticated users can access them, and the role:Retailer middleware, ensuring that only users with the Retailer role can access them.
 
-- **Task:** Set up role management using Laravel Spatie's Role and Permission package.
-- **Details:** Define and manage three roles: `Admin`, `Wholesaler`, and `Retailer`. Ensure only users with the `Retailer` role can access the spin wheel functionalities.
+Use Spin
 
-### 5. User Seeder
+Method: POST
+Endpoint: /use-spin
+Description: Allows a retailer to use a spin.
 
-- **Task:** Create a seeder to populate the database with users.
-- **Details:** Seed the database with:
-    - 17 users with the `Wholesaler` role
-    - 33 users with the `Retailer` role
-    - 5 users with the `Admin` role
+Buy Spin
 
-### 6. Spin Wheel Application
+Method: POST
+Endpoint: /buy-spin
+Description: Allows a retailer to purchase additional spins.
 
-- **Task:** Develop a spin wheel feature API's with specific business rules.
-- **Ue Spin API:** Retailer use free spin and win -> 100. then add to wallet and generate transaction.
-- **Buy Spin API:** Retailer after using free spin and then buy spin -> 200. then deduct to wallet and generate transaction.
-- **Spin Histroy API for self:** 
-- **Spin Histroy API for admin:** 
-- **Details:**
-    - **Free Spins:** Allow each retailer to have 3 free spins per day.
-    - **Purchased Spins:** After using the free spins, retailers can buy additional spins. Each purchased spin grants one more chance with 200.
-    - **Transaction Handling:** When a retailer spins the wheel:
-        - Add balance to the retailer's wallet.
-        - Generate a wallet transaction with the following fields:
-            - `transaction_id` (format: `speedforce-year-12SD2U3HHH`)
-            - `user_id`
-            - `amount`
-            - `source`
-            - `type` (either `addition` or `deduction`)
 
----
-> Submission
-- **Please submit your completed task**  by pushing the code to a GitHub repository and sharing the repository link with us. Ensure that your code is well-organized, follows best practices, and includes clear documentation.
----
+Spin History for Retailer
 
-Thank you for participating in the assessment task. We look forward to reviewing your submission. If you have any questions, please feel free to reach out.
+Method: GET
+Endpoint: /spin-history
+Description: Retrieves the spin history for the authenticated retailer.
+
+
+Admin Role Routes
+
+Middleware: auth:sanctum, role:Admin
+Description: These routes are protected by the auth:sanctum middleware for authentication and the role:Admin middleware to restrict access to users with the Admin role only.
+
+
+Spin History for Admin
+
+Method: GET
+Endpoint: /admin/spin-history
+Description: Allows the admin to view the spin history of all retailers.
 
 
